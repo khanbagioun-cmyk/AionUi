@@ -198,7 +198,7 @@ class AutoUpdaterService extends EventEmitter {
       const devConfig = [
         'provider: generic',
         `url: ${cdnFeedOptions.url}`,
-        'updaterCacheDirName: com.aionui.app',
+        'updaterCacheDirName: com.dastyar.app',
         '',
       ].join('\n');
       const configPath = path.join(app.getPath('userData'), 'dev-app-update.yml');
@@ -607,6 +607,12 @@ class AutoUpdaterService extends EventEmitter {
     try {
       if (!this._isInitialized) {
         throw new Error('AutoUpdaterService not initialized');
+      }
+
+      // Company builds ship without an update feed or update service.
+      if (app.isPackaged && process.env[FORCE_DEV_AUTO_UPDATE_ENV] !== '1') {
+        log.debug('[auto-update] Company build without update feed; skipping check');
+        return { success: true };
       }
 
       log.debug('[auto-update] checkForUpdates requested', {

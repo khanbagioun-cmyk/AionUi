@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 Dastyar (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  *
  * Pure Node/Bun CLI — resets the WebUI admin password for the standalone
@@ -19,7 +19,7 @@
  * Usage:
  *   bun run resetpass                 # default work dir
  *   bun run resetpass --data-dir /x   # custom work dir
- *   AIONUI_DATA_DIR=/x bun run resetpass
+ *   DASTYAR_DATA_DIR=/x bun run resetpass
  *   NODE_ENV=production bun run resetpass
  */
 
@@ -63,10 +63,10 @@ function getFlag(name: string): string | undefined {
 /**
  * Same resolution as scripts/webui.ts:resolveBackendDataDir — keep both in sync
  * so `bun run webui` and `bun run resetpass` always target the same SQLite DB.
- * See the comment there for why the default is `~/.aionui-web*` (not `~/.aionui*`).
+ * See the comment there for why the default is `~/.dastyar-web*` (not `~/.aionui*`).
  */
 function resolveWorkDir(): string {
-  const override = getFlag('--data-dir') ?? process.env.AIONUI_DATA_DIR;
+  const override = getFlag('--data-dir') ?? process.env.DASTYAR_DATA_DIR;
   if (override && override.trim().length > 0) {
     const resolved = path.resolve(override);
     fs.mkdirSync(resolved, { recursive: true });
@@ -74,13 +74,13 @@ function resolveWorkDir(): string {
   }
   const suffix =
     process.env.NODE_ENV === 'production' ? '' : process.env.AIONUI_MULTI_INSTANCE === '1' ? '-dev-2' : '-dev';
-  const dir = path.join(os.homedir(), `.aionui-web${suffix}`);
+  const dir = path.join(os.homedir(), `.dastyar-web${suffix}`);
   fs.mkdirSync(dir, { recursive: true });
   return dir;
 }
 
 function resolveBackendBinary(): string {
-  if (process.env.AIONUI_BACKEND_BIN) return process.env.AIONUI_BACKEND_BIN;
+  if (process.env.DASTYAR_BACKEND_BIN) return process.env.DASTYAR_BACKEND_BIN;
 
   const bundledBase = process.env.AIONUI_BACKEND_BUNDLED_DIR ?? path.join(repoRoot, 'resources', 'bundled-aioncore');
   const runtimeKey = `${process.platform}-${process.arch}`;
@@ -96,7 +96,7 @@ function resolveBackendBinary(): string {
   }
 
   throw new Error(
-    `Cannot find "${BACKEND_BINARY}". Set AIONUI_BACKEND_BIN, put it on PATH, or place it at ${bundled}.`
+    `Cannot find "${BACKEND_BINARY}". Set DASTYAR_BACKEND_BIN, put it on PATH, or place it at ${bundled}.`
   );
 }
 
@@ -193,7 +193,7 @@ async function main(): Promise<void> {
 
   // Slow path: no webui running. Spawn a short-lived backend against the same
   // data-dir, reset, stop.
-  const logDir = process.env.AIONUI_LOG_DIR ?? path.join(workDir, 'logs');
+  const logDir = process.env.DASTYAR_LOG_DIR ?? path.join(workDir, 'logs');
   fs.mkdirSync(logDir, { recursive: true });
 
   const backendBin = resolveBackendBinary();

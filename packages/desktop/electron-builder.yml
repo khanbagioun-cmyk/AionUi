@@ -1,12 +1,12 @@
-appId: com.aionui.app
-productName: AionUi
-executableName: AionUi
-copyright: Copyright © 2024 AionUi
+appId: com.dastyar.app
+productName: Dastyar
+executableName: Dastyar
+copyright: Copyright © 2024 AionUi; Dastyar fork
 
 protocols:
-  - name: AionUi Protocol
+  - name: Dastyar Protocol
     schemes:
-      - aionui
+      - dastyar
 
 asar:
   smartUnpack: true
@@ -169,17 +169,17 @@ linux:
   icon: resources/app.png
   artifactName: ${productName}-${version}-${os}-${arch}.${ext}
   category: Utility
-  maintainer: aionui
-  vendor: aionui
+  maintainer: dastyar
+  vendor: dastyar
   synopsis: ${description}
   description: ${description}
   desktop:
     entry:
-      Name: AionUi
+      Name: Dastyar
       Comment: ${description}
-      Icon: AionUi
+      Icon: Dastyar
       Categories: Office;Utility;
-      MimeType: x-scheme-handler/aionui;
+      MimeType: x-scheme-handler/dastyar;
 
 npmRebuild: false
 buildDependenciesFromSource: false
@@ -218,7 +218,7 @@ electronDownload:
 
 publish:
   provider: github
-  owner: iOfficeAI
+  owner: khanbagioun-cmyk
   repo: AionUi
   publishAutoUpdate: true
   releaseType: release

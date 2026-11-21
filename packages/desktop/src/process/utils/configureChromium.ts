@@ -38,6 +38,13 @@ if (!app.isPackaged && !e2eUserDataDir) {
   // Explicitly override userData to the dev directory.
   const appSupportDir = path.dirname(app.getPath('userData'));
   app.setPath('userData', path.join(appSupportDir, devAppName));
+} else if (app.isPackaged && !e2eUserDataDir) {
+  // Fork branding: keep the fork's userData separate from AionUi, which can be
+  // installed side by side. Must run before the first getPath('userData') call;
+  // setName alone does not move userData on Electron 28+.
+  const appSupportDir = path.dirname(app.getPath('userData'));
+  app.setName('Dastyar');
+  app.setPath('userData', path.join(appSupportDir, 'Dastyar'));
 }
 
 // app.disableHardwareAcceleration() must run before app is ready.

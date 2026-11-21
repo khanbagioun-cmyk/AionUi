@@ -59,6 +59,17 @@ export const runUpdateCheck = async (opts: {
   fallbackVersion: string;
   checkFailedLabel: string;
 }): Promise<CheckUpdateOutcome> => {
+  // Packaged company builds ship without an update feed or update service.
+  const viteEnv = (import.meta as ImportMeta & { env?: { PROD?: boolean } }).env;
+  if (viteEnv?.PROD) {
+    return {
+      kind: 'upToDate',
+      currentVersion: opts.fallbackVersion,
+      updateInfo: null,
+      releasePageUrl: '',
+    };
+  }
+
   try {
     let autoUpdateInfo: { version: string; releaseNotes?: string } | null = null;
     try {
