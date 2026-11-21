@@ -1,0 +1,118 @@
+name: Dastyar unsigned installers
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dastyar-unsigned
+  cancel-in-progress: true
+
+env:
+  TAG: dastyar-v2.2.2-company.1
+  CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: mac-arm64
+            script: build-mac:arm64
+            runner: macos-15
+            artifact: dmg
+          - target: mac-x64
+            script: build-mac:x64
+            runner: macos-15-intel
+            artifact: dmg
+          - target: win-x64
+            script: build-win:x64
+            runner: windows-2022
+            artifact: exe
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.9.0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun run postinstall
+        continue-on-error: true
+
+      - name: Package ${{ matrix.target }} (unsigned)
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bun run ${{ matrix.script }}
+
+      - name: Stage installer and checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          mkdir -p dist
+          if [ "${{ matrix.artifact }}" = "dmg" ]; then
+            src=$(find out -maxdepth 1 -type f -name '*.dmg' | head -n 1)
+          else
+            src=$(find out -maxdepth 1 -type f -name '*.exe' | head -n 1)
+          fi
+          test -n "$src"
+          dest="dist/dastyar-${version}-${{ matrix.target }}-unsigned.${{ matrix.artifact }}"
+          cp "$src" "$dest"
+          node -e "const c=require('crypto'),f=require('fs'),p=require('path');const file=process.argv[1];console.log(c.createHash('sha256').update(f.readFileSync(file)).digest('hex')+'  '+p.basename(file))" "$dest" > "dist/SHA256SUMS-${{ matrix.target }}"
+          cat "dist/SHA256SUMS-${{ matrix.target }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dastyar-${{ matrix.target }}
+          path: |
+            dist/dastyar-*-${{ matrix.target }}-unsigned.${{ matrix.artifact }}
+            dist/SHA256SUMS-${{ matrix.target }}
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Combine checksums and docs
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          find artifacts -type f \( -name '*.dmg' -o -name '*.exe' \) -exec cp {} dist/ \;
+          find artifacts -name 'SHA256SUMS-*' -type f -exec cat {} \; | sort -k2 > dist/SHA256SUMS
+          cp docs/deploy/company-install/*.md dist/
+          cat dist/SHA256SUMS
+
+      - name: Create and publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" --target "$GITHUB_SHA" \
+            --title "Dastyar 2.2.2 company.1" \
+            --notes-file docs/deploy/company-install/release-notes.md
+          find dist -maxdepth 1 -type f \( -name '*.dmg' -o -name '*.exe' -o -name 'SHA256SUMS' -o -name '*.md' \) -print0 \
+            | xargs -0 gh release upload "$TAG"
+          gh release edit "$TAG" --draft=false
