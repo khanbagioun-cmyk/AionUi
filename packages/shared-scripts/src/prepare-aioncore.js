@@ -230,8 +230,14 @@ function extractArchive(archivePath, outputDir, platform) {
   ensureDirectory(outputDir);
   if (platform === 'win32' || archivePath.endsWith('.zip')) {
     if (platform === 'win32') {
-      const ps = `Expand-Archive -LiteralPath '${archivePath.replace(/'/g, "''")}' -DestinationPath '${outputDir.replace(/'/g, "''")}' -Force`;
-      execFileSync('powershell', ['-NoProfile', '-NonInteractive', '-Command', ps]);
+      // bsdtar ships with Windows 10+ and handles zip without the
+      // Expand-Archive/.NET overload difference between PowerShell 5 and 7.
+      try {
+        execFileSync('tar', ['-xf', archivePath, '-C', outputDir]);
+      } catch {
+        const ps = `Expand-Archive -LiteralPath '${archivePath.replace(/'/g, "''")}' -DestinationPath '${outputDir.replace(/'/g, "''")}' -Force`;
+        execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', ps]);
+      }
     } else {
       execFileSync('unzip', ['-o', archivePath, '-d', outputDir]);
     }
