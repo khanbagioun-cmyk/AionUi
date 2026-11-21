@@ -289,7 +289,7 @@ const AddPlatformModal = ModalHOC<{
     const targetPlatform = MODEL_PLATFORMS.find((p) => p.value === suggestedPlatform || p.name === suggestedPlatform);
     if (targetPlatform) {
       form.setFieldValue('platform', targetPlatform.value);
-      form.setFieldValue('model', '');
+      form.setFieldValue('model', targetPlatform.default_model ? [targetPlatform.default_model] : []);
       protocolDetection.reset();
       // 记录当前输入，防止切换后重复检测
       // Record current input to prevent redundant detection after switch
@@ -311,7 +311,7 @@ const AddPlatformModal = ModalHOC<{
       setOpenAiApiMode('auto');
       setIsFullUrl(false);
 
-      // Pre-fill from deep link data (aionui:// protocol)
+      // Pre-fill from deep link data (dastyar:// protocol)
       if (deepLinkData?.base_url || deepLinkData?.api_key) {
         // Default to new-api platform for deep links (typical one-api/new-api usage)
         form.setFieldValue('platform', deepLinkData.platform || 'new-api');
@@ -319,6 +319,9 @@ const AddPlatformModal = ModalHOC<{
         if (deepLinkData.api_key) form.setFieldValue('api_key', deepLinkData.api_key);
       } else {
         form.setFieldValue('platform', DEFAULT_PLATFORM_VALUE);
+        const defaultPlatform = MODEL_PLATFORMS.find((item) => item.value === DEFAULT_PLATFORM_VALUE);
+        if (defaultPlatform?.base_url) form.setFieldValue('base_url', defaultPlatform.base_url);
+        if (defaultPlatform?.default_model) form.setFieldValue('model', [defaultPlatform.default_model]);
       }
     }
   }, [modalProps.visible, deepLinkData]);
@@ -436,7 +439,7 @@ const AddPlatformModal = ModalHOC<{
                 if (plat) {
                   // model is a multi-select field — reset to an empty array, not
                   // '' (which would surface as a stray empty tag).
-                  form.setFieldValue('model', []);
+                  form.setFieldValue('model', plat.default_model ? [plat.default_model] : []);
                   // Prefill the platform's default Base URL so users can see and
                   // edit it. Custom / New API have no preset — clear the field so
                   // it doesn't carry over the previously selected platform's URL.

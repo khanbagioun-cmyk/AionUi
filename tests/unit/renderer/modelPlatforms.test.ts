@@ -12,16 +12,23 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_PLATFORM_VALUE, MODEL_PLATFORMS } from '@renderer/utils/model/modelPlatforms';
 
 describe('MODEL_PLATFORMS ordering', () => {
-  it('keeps Custom first and pins both Moonshot entries right after it', () => {
+  it('pins the company route first, then Custom and both Moonshot entries', () => {
     const values = MODEL_PLATFORMS.map((p) => p.value);
-    expect(values[0]).toBe('custom');
-    expect(values[1]).toBe('Moonshot');
-    expect(values[2]).toBe('Moonshot-Global');
+    expect(values[0]).toBe('Zharfa-Company');
+    expect(values[1]).toBe('custom');
+    expect(values[2]).toBe('Moonshot');
+    expect(values[3]).toBe('Moonshot-Global');
+  });
+
+  it('ships the company endpoint and default model', () => {
+    const company = MODEL_PLATFORMS[0];
+    expect(company.base_url).toBe('https://api.zharfa.tech/v1');
+    expect(company.default_model).toBe('glm5_3-fp8');
   });
 
   it('defaults the add-model modal platform to the first list entry', () => {
     expect(DEFAULT_PLATFORM_VALUE).toBe(MODEL_PLATFORMS[0].value);
-    expect(DEFAULT_PLATFORM_VALUE).toBe('custom');
+    expect(DEFAULT_PLATFORM_VALUE).toBe('Zharfa-Company');
   });
 
   it('defines each Moonshot entry exactly once', () => {

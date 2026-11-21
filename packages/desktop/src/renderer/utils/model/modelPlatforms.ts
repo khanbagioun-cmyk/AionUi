@@ -39,6 +39,8 @@ export interface PlatformConfig {
   platform: PlatformType;
   /** Base URL（预设供应商使用） / Base URL (for preset providers) */
   base_url?: string;
+  /** 选中平台时预填的默认模型 / Default model prefilled when the platform is selected */
+  default_model?: string;
   /** 国际化 key（可选，用于需要翻译的平台名称） / i18n key (optional, for platform names that need translation) */
   i18nKey?: string;
 }
@@ -54,6 +56,16 @@ export interface PlatformConfig {
  * 4+ 预设供应商
  */
 export const MODEL_PLATFORMS: PlatformConfig[] = [
+  // 公司网关（置顶）/ Company gateway (pinned)
+  {
+    name: 'Zharfa Company',
+    value: 'Zharfa-Company',
+    logo: buildLogoAssetUrl('brand/app.png'),
+    platform: 'custom',
+    base_url: 'https://api.zharfa.tech/v1',
+    default_model: 'glm5_3-fp8',
+  },
+
   // 自定义选项（需要用户输入 base url）/ Custom option (requires user to input base url)
   { name: 'Custom', value: 'custom', logo: null, platform: 'custom', i18nKey: 'settings.platformCustom' },
 
