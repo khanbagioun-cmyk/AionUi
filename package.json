@@ -1,11 +1,11 @@
 {
-  "name": "AionUi",
+  "name": "dastyar",
   "version": "2.2.2",
-  "description": "Transform your command-line AI agent into a modern, efficient AI Chat interface.",
+  "description": "Dastyar AI Assistant — a rebranded fork of AionUi.",
   "keywords": [],
   "license": "Apache-2.0",
   "author": {
-    "name": "AionUi",
+    "name": "Dastyar (fork of AionUi)",
     "email": "service@aionui.com"
   },
   "workspaces": [

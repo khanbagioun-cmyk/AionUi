@@ -1,6 +1,11 @@
 <p align="center">
-  <img src="./resources/aionui-banner-1.png" alt="AionUi - Cowork with AI Agents" width="100%">
+  <img src="./resources/aionui-banner-1.png" alt="Dastyar - Cowork with AI Agents" width="100%">
 </p>
+
+# Dastyar
+
+> **Dastyar fork** — a rebranded fork of AionUi with its own app identity. See
+> [FORK.md](FORK.md). Upstream: [iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi).
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/iOfficeAI/AionUi?style=flat-square&color=32CD32" alt="Version">
