@@ -58,7 +58,8 @@ export function detectStartupArchitectureMismatch(
   const execFileSync = env.execFileSync ?? defaultExecFileSync;
   const isRosettaTranslated = readSysctlInt('sysctl.proc_translated', execFileSync) === 1;
   const deviceSupportsArm64 = readSysctlInt('hw.optional.arm64', execFileSync) === 1;
-  if (!isRosettaTranslated && !deviceSupportsArm64) {
+  // An x64 package running under Rosetta on Apple Silicon is supported.
+  if (isRosettaTranslated || !deviceSupportsArm64) {
     return null;
   }
 

@@ -12,9 +12,10 @@ Dastyar 安装到 `/Applications/Dastyar.app`，只使用自己的配置，AionU
 
 ```bash
 hdiutil attach ~/Downloads/dastyar-2.2.2-mac-arm64-unsigned.dmg
-cp -R "/Volumes/Dastyar/Dastyar.app" /Applications/
+VOLUME=$(hdiutil info | awk -F'\t' '/\/Volumes\/Dastyar/{print $NF; exit}')
+cp -R "$VOLUME/Dastyar.app" /Applications/
 xattr -dr com.apple.quarantine /Applications/Dastyar.app
-hdiutil detach "/Volumes/Dastyar"
+hdiutil detach "$VOLUME"
 open /Applications/Dastyar.app
 ```
 

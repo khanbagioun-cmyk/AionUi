@@ -62,8 +62,8 @@ return path.join(getDataPath(), 'aionui.db');
 
 **userData directory** (`src/process/utils/configureChromium.ts:18-26`):
 
-- Dev mode: `~/Library/Application Support/AionUi-Dev/` (macOS)
-- Database: `{userData}/config/aionui.db`
+- Dev mode: `~/Library/Application Support/Dastyar-Dev/` (macOS)
+- Database: `{userData}/home/aionui.db`
 - Shared by all E2E tests
 
 **Conflict scenario**: If Assistant tests and Skills tests run in parallel workers:
@@ -132,8 +132,8 @@ AIONUI_CDP_PORT: '0';
    return `AionUi-E2E-Worker-${workerId}`;
    ```
 3. Each worker gets isolated:
-   - `~/Library/Application Support/AionUi-E2E-Worker-0/config/aionui.db`
-   - `~/Library/Application Support/AionUi-E2E-Worker-1/config/aionui.db`
+   - `~/Library/Application Support/Dastyar-E2E-Worker-0/home/aionui.db`
+   - `~/Library/Application Support/Dastyar-E2E-Worker-1/home/aionui.db`
 4. Update `playwright.config.ts`:
    ```typescript
    workers: 2,  // or process.env.CI ? 1 : 2
