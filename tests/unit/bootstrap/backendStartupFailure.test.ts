@@ -314,7 +314,7 @@ describe('classifyBackendStartupFailure', () => {
 });
 
 describe('detectStartupArchitectureMismatch', () => {
-  it('detects packaged macOS x64 builds running on Apple Silicon', () => {
+  it('allows packaged macOS x64 builds running under Rosetta on Apple Silicon', () => {
     const mismatch = detectStartupArchitectureMismatch({
       arch: 'x64',
       isPackaged: true,
@@ -327,15 +327,7 @@ describe('detectStartupArchitectureMismatch', () => {
       },
     });
 
-    expect(mismatch).toEqual({
-      deviceArch: 'arm64',
-      expectedDownloadArch: 'arm64',
-      isPackaged: true,
-      isRosettaTranslated: true,
-      packageArch: 'x64',
-      platform: 'darwin',
-      stage: 'startup_architecture_check',
-    });
+    expect(mismatch).toBeNull();
   });
 
   it('allows packaged macOS x64 builds on Intel Macs', () => {
